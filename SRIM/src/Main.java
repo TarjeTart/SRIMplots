@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.ui.UIUtils;
 
 import Chart.*;
@@ -21,15 +22,25 @@ public class Main {
 	 * 7 = eV/1E15 atoms/cm2, 8 = LSS reduce units
 	 */
 	
+	/*
+	 * checklist for new runs
+	 * - Change filename
+	 * - Change beam ion
+	 * - Change material
+	 * - Change energy range
+	 */
+	
 	//location of the SRIM SR Module directory on the machine
 	public static String srModLocation = "D:" + File.separator + "SRIM-2013" + File.separator + "SR Module";
 	
 	public static void main(String[] args) {
 		
 		//file name
-		String fileName = "Argon in Niobium";
+		String fileName = "Neon in Niobium";
 		//create beam
-		IonBeam beam = new IonBeam(18, 39.962);//Z, mass
+		//argon: 18, 39.948
+		//neon: 10, 20.1797
+		IonBeam beam = new IonBeam(10, 20.1797);//Z, mass
 		//create target
 		Target target = new Target(41, "Niobium", 1, 92.906, 8.57 , 0, 1);//int Z, String name, int stoich, double mass, double density, int state(0=sol,1=gas), int corr
 		//method to create the SRIM input file
@@ -48,15 +59,18 @@ public class Main {
 		//retrieve data
 		ArrayList<SrimDataPoint> data = getData(fileName);
 		//plot range data
-		RangeChart rangeChart = new RangeChart("Range vs Energy", data, fileName);
+		RangeChart rangeChart = new RangeChart(fileName, data, fileName);
 		rangeChart.pack();
 		UIUtils.centerFrameOnScreen(rangeChart);
 		rangeChart.setVisible(true);
-		//plot straggle data
-		StraggleChart straggleChart = new StraggleChart("Straggle vs Energy", data, fileName);
-		straggleChart.pack();
-		UIUtils.centerFrameOnScreen(straggleChart);
-		straggleChart.setVisible(true);
+		try {
+			ChartUtils.saveChartAsPNG(new File(srModLocation + File.separator + fileName + ".png"), 
+					rangeChart.getJFreeChart(), 
+					1080, 720);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error saving chart as png");
+		}
 		
 	}
 	
