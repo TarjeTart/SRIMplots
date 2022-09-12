@@ -3,11 +3,16 @@ package data;
 public class SrimDataPoint {
 
 	private double ionEnergy, range, straggling;
+	
+	private units energyUnit, rangeUnit,straggleUnit;
 
-	public SrimDataPoint(double ionEnergy, double range, double straggling) {
+	public SrimDataPoint(double ionEnergy, String energyUnit, double range, String rangeUnit, double straggling, String straggleUnit) {
 		this.ionEnergy = ionEnergy;
+		this.setEnergyUnit(units.getUnit(energyUnit));
 		this.range = range;
+		this.setRangeUnit(units.getUnit(rangeUnit));
 		this.straggling = straggling;
+		this.setStraggleUnit(units.getUnit(straggleUnit));
 	}
 
 	public double getIonEnergy() {
@@ -32,6 +37,30 @@ public class SrimDataPoint {
 
 	public void setStraggling(double straggling) {
 		this.straggling = straggling;
+	}
+
+	public units getRangeUnit() {
+		return rangeUnit;
+	}
+
+	public void setRangeUnit(units rangeUnit) {
+		this.rangeUnit = rangeUnit;
+	}
+
+	public units getStraggleUnit() {
+		return straggleUnit;
+	}
+
+	public void setStraggleUnit(units straggleUnit) {
+		this.straggleUnit = straggleUnit;
+	}
+
+	public units getEnergyUnit() {
+		return energyUnit;
+	}
+
+	public void setEnergyUnit(units energyUnit) {
+		this.energyUnit = energyUnit;
 	}
 	
 }

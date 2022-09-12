@@ -35,16 +35,26 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
+		///////////////////////////////////////////////////////
+		//User input is only on lines 42-52 and maybe line 34//
+		///////////////////////////////////////////////////////
+		
 		//file name
 		String fileName = "Neon in Niobium";
 		//create beam
 		//argon: 18, 39.948
-		//neon: 10, 20.1797
-		IonBeam beam = new IonBeam(10, 20.1797);//Z, mass
+		//neon: 10, 19.992
+		IonBeam beam = new IonBeam(10, 19.992);//Z, mass
 		//create target
-		Target target = new Target(41, "Niobium", 1, 92.906, 8.57 , 0, 1);//int Z, String name, int stoich, double mass, double density, int state(0=sol,1=gas), int corr
+		//Nb 8.57 , 0, 1
+		Target target = new Target(8.57 , 0, 1);//density, int state(0=sol,1=gas), int corr
+		//nb 41, "Niobium", 1, 92.906
+		target.addElement(41, "Niobium", 1, 92.906);//Z, name, stoich, mass
 		//method to create the SRIM input file
 		createSRIN(fileName, beam, target, 10, 45);//filename, beam, target, Emin, Emax
+		
+		
+		
 		//run SRIM
 		try {
 			//creates process
@@ -58,11 +68,15 @@ public class Main {
 		}
 		//retrieve data
 		ArrayList<SrimDataPoint> data = getData(fileName);
-		//plot range data
-		RangeChart rangeChart = new RangeChart(fileName, data, fileName);
+		//form: filename, data, filename, length unit, energy unit
+		RangeChart rangeChart = new RangeChart(fileName, data, fileName, "A", "keV");
+		//makes chart fit window size
 		rangeChart.pack();
+		//creates chart panel in middle of screen
 		UIUtils.centerFrameOnScreen(rangeChart);
+		//shows user final chart
 		rangeChart.setVisible(true);
+		//saves chart as a png
 		try {
 			ChartUtils.saveChartAsPNG(new File(srModLocation + File.separator + fileName + ".png"), 
 					rangeChart.getJFreeChart(), 
@@ -87,12 +101,14 @@ public class Main {
 					+ "---Output File Name\r\n"
 					+ "\"" + fileName + "\"\r\n"
 					+ "---Ion(Z), Ion Mass(u)\r\n"
-					+ beam.getZ(0) + "   " + beam.getMass(0) + "\r\n"
+					+ beam.getZ() + "   " + beam.getMass() + "\r\n"
 					+ "---Target Data: (Solid=0,Gas=1), Density(g/cm3), Compound Corr.\r\n"
-					+ target.getState() + "    " + target.getDensity(0) + "    " + target.getStoich(0) + "\r\n"
-					+ "---Number of Target Elements\r\n1\r\n---Target Elements: (Z), Target name, Stoich, Target Mass(u)\r\n"
-					+ target.getZ(0) + "   \"" + target.getName(0) + "\"               " + target.getStoich(0) + "             " + target.getMass(0) + "\r\n"
-					+ "---Output Stopping Units (1-8)\r\n5\r\n---Ion Energy : E-Min(keV), E-Max(keV)\r\n"
+					+ target.getState() + "    " + target.getDensity() + "    " + target.getCompCorr() + "\r\n"
+					+ "---Number of Target Elements\r\n" + target.getElementCount() + "\r\n---Target Elements: (Z), Target name, Stoich, Target Mass(u)\r\n");
+			for(int i = 0; i < target.getElementCount(); i++) {
+				fileWriter.write( target.getZ(i) + "   \"" + target.getName(i) + "\"               " + target.getStoich(i) + "             " + target.getMass(i) + "\r\n");
+			}
+			fileWriter.write("---Output Stopping Units (1-8)\r\n5\r\n---Ion Energy : E-Min(keV), E-Max(keV)\r\n"
 					+ Emin + "    " + Emax);
 			fileWriter.close();
 		} catch (IOException e) {
@@ -103,6 +119,7 @@ public class Main {
 	
 	public static ArrayList<SrimDataPoint> getData(String fileName){
 		
+		//data points to be plotted
 		ArrayList<SrimDataPoint> dataPoints = new ArrayList<SrimDataPoint>();
 		
 		try {
@@ -116,17 +133,23 @@ public class Main {
 			fileScanner.nextLine();line = fileScanner.nextLine();
 			//while are data lines
 			while(!line.contains("--------")) {
-				line.trim();
 				Scanner tmp = new Scanner(line);
-				Double energy = tmp.nextDouble(); 
-				tmp.next();
+				//get energy
+				Double energy = tmp.nextDouble();
+				String eUnit = tmp.next();
+				//stopping range values elec and nuclear
 				tmp.nextDouble();
 				tmp.nextDouble();
-				Double range = tmp.nextDouble(); tmp.next();
+				//get range
+				Double range = tmp.nextDouble(); 
+				String rUnit = tmp.next();
+				//get straggle
 				Double straggling = tmp.nextDouble();
-				dataPoints.add(new SrimDataPoint(energy, range, straggling));
-				line = fileScanner.nextLine();
+				String sUnit = tmp.next();
+				//adds data point
+				dataPoints.add(new SrimDataPoint(energy, eUnit, range, rUnit, straggling, sUnit));
 				tmp.close();
+				line = fileScanner.nextLine();
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

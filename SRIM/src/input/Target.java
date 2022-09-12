@@ -9,21 +9,29 @@ public class Target {
 	private ArrayList<String> names = new ArrayList<String>();
 	private ArrayList<Integer> stoichValues = new ArrayList<Integer>();
 	private ArrayList<Double> massValues = new ArrayList<Double>();
-	private ArrayList<Double> densities = new ArrayList<Double>();
 	
+	private double density;
 	private int state;//solid=0, gas=1
 	private int compoundCorr;//always 1 for now
 	
-	public Target(int Z, String name, int stoich, double mass, double density, int state, int corr) {
-		
+	private int elemCount = 0;
+	
+	public Target(double density, int state, int corr) {
+		this.density = density;
+		this.state = state;
+		compoundCorr = corr;
+	}
+	
+	public void addElement(int Z, String name, int stoich, double mass) {
 		Zvalues.add(Z);
 		names.add(name);
 		stoichValues.add(stoich);
 		massValues.add(mass);
-		densities.add(density);
-		this.state = state;
-		compoundCorr = corr;
-		
+		elemCount++;
+	}
+	
+	public int getElementCount() {
+		return elemCount;
 	}
 	
 	public int getZ(int index) {
@@ -38,8 +46,8 @@ public class Target {
 	public double getMass(int index) {
 		return massValues.get(index);
 	}
-	public double getDensity(int index) {
-		return densities.get(index);
+	public double getDensity() {
+		return density;
 	}
 	public int getState() {
 		return state;
