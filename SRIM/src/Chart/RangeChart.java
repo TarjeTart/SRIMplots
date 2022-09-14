@@ -30,15 +30,11 @@ public class RangeChart extends ApplicationFrame {
 		//data to be plotted
 		DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
 		//set of data used for line of best fit
-		double[][] set = new double[data.size()][2];
-		int count = 0;
 		//add data to the dataset
 		for(SrimDataPoint i : data) {
 			dataset.add(units.convertLength(i.getRange(), i.getRangeUnit(), lengthU),
 					units.convertLength(i.getStraggling(), i.getStraggleUnit(), lengthU), "Energy", 
-					String.valueOf(units.toKeV(i.getIonEnergy(), i.getEnergyUnit())));
-			double[] tmp = {i.getIonEnergy(), i.getRange()};
-			set[count++] = tmp;
+					String.valueOf(units.convertEnergy(i.getIonEnergy(), i.getEnergyUnit(), energyU)));
 		}
 		//create line chart with error bars
 		chartErrorBars = ChartFactory.createLineChart(
@@ -54,7 +50,6 @@ public class RangeChart extends ApplicationFrame {
 		statisticalRenderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator(
 				"{2} " + units.toString(lengthU), NumberFormat.getNumberInstance()));
 		statisticalRenderer.setDefaultItemLabelsVisible(true);
-		System.out.println("Range = " + Regression.getOLSRegression(set)[1] + " x + " + Regression.getOLSRegression(set)[0]);
 		//add chart to a jpanel
 		ChartPanel chartPanel = new ChartPanel(chartErrorBars);
 		//initial size of panel and add to content pane

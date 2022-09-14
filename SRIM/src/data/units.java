@@ -12,12 +12,12 @@ public enum units {
 	cm;
 	
 	public static units getUnit(String unit) {
-		switch(unit) {
-			case "keV":
+		switch(unit.toLowerCase()) {
+			case "kev":
 				return KeV;
-			case "MeV":
+			case "mev":
 				return MeV;
-			case "A":
+			case "a":
 				return A;
 			case "um":
 				return um;
@@ -99,12 +99,22 @@ public enum units {
 		return -1;
 	}
 	
-	public static double toKeV(double value, units unit) {
-		switch(unit) {
+	public static double convertEnergy(double value, units start, units end) {
+		switch(start) {
 			case KeV:
-				return value;
+				switch(end) {
+					case KeV:
+						return value;
+					case MeV:
+						return value*.001;
+				}
 			case MeV:
-				return value*1000;
+				switch(end) {
+				case KeV:
+					return value*1000;
+				case MeV:
+					return value;
+			}
 		}
 		return -1;
 	}
