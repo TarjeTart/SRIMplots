@@ -1,0 +1,3 @@
+Requirments:
+- This application runs on Java 1.8
+- When prompted to select SRIM location make sure to point to SRIM folder and not inside it
