@@ -8,12 +8,14 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -45,13 +47,19 @@ public class Main {
 	
 	public static String fileName;
 	
-	public static JFrame firstFrame,fileNameFrame,beamFrame,materialFrame,elementFrame,finalFrame;
+	public static JFrame logFrame,firstFrame,fileNameFrame,beamFrame,materialFrame,elementFrame,finalFrame;
 	
 	public static IonBeam beam;
 	
 	public static Target target;
 	
 	public static void main(String[] args) {
+		
+		logFrame = new JFrame();
+		logFrame.setSize(400,50);
+		//set to true if working on code
+		logFrame.setVisible(false);
+		logFrame.setTitle("Version 3.0.0");
 		
 		//create initial jframes
 		firstFrame = new JFrame();
@@ -62,7 +70,7 @@ public class Main {
 		firstFrame.add(path);
 		path.setLocation(250,100);
 		//button that will open file explorer
-		JButton fileExplore = new JButton("Select SR Module Directory");
+		JButton fileExplore = new JButton("Select SRIM Folder");
 		fileExplore.setBounds(130,200,200,40);
 		//what to do when button is pressed
 		fileExplore.addActionListener(new ActionListener(){  
@@ -94,7 +102,7 @@ public class Main {
 				approveName.setLocation(250, 300);
 				fileNameFrame.setSize(700,800);
 				fileNameFrame.setLayout(null);
-				firstFrame.setVisible(false);
+				firstFrame.dispose();;
 				fileNameFrame.setVisible(true);
 				fileNameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			}
@@ -142,7 +150,7 @@ public class Main {
 		beamFrame.add(approveBeam);
 		beamFrame.setSize(400,500);
 		beamFrame.setLayout(null);
-		fileNameFrame.setVisible(false);
+		fileNameFrame.dispose();
 		beamFrame.setVisible(true);
 		beamFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -180,7 +188,7 @@ public class Main {
 		materialFrame.add(approveMaterial);
 		materialFrame.setSize(700,800);
 		materialFrame.setLayout(null);
-		beamFrame.setVisible(false);
+		beamFrame.dispose();;
 		materialFrame.setVisible(true);
 		materialFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -237,7 +245,7 @@ public class Main {
 		elementFrame.add(approveElements);
 		elementFrame.setSize(800,900);
 		elementFrame.setLayout(null);
-		materialFrame.setVisible(false);
+		materialFrame.dispose();
 		elementFrame.setVisible(true);
 		elementFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -261,11 +269,15 @@ public class Main {
 		JButton createPlot = new JButton("Create Plot");
 		createPlot.setBounds(130,100,100,40);
 		createPlot.setLocation(250, 600);
+		logFrame.setTitle("Before createPlot");
+		///////////////////////////////////////////////////////////////////////////
 		createPlot.addActionListener(new ActionListener(){  
-			public void actionPerformed(ActionEvent e){  
+			public void actionPerformed(ActionEvent e){
+				logFrame.setTitle("Before SRIN");
 				createSRIN(fileName, beam, target, 
 						new Scanner(energyI.getText()).nextInt(), 
 						new Scanner(energyF.getText()).nextInt());
+				logFrame.setTitle("Before Process");
 				try {
 					//creates process
 					ProcessBuilder pb = new ProcessBuilder(srModLocation + File.separator + "SRModule.exe");
@@ -274,8 +286,9 @@ public class Main {
 					process.waitFor();//waits for srim to finish
 				} catch (IOException | InterruptedException ex) {
 					ex.printStackTrace();
-					System.out.println("Error running SRModule");
+					logFrame.setTitle("error running sr mod");
 				}
+				logFrame.setTitle("after process");
 				//retrieve data
 				ArrayList<SrimDataPoint> data = getData(fileName);
 				//form: filename, data, filename, length unit, energy unit
@@ -295,12 +308,14 @@ public class Main {
 							1080, 720);
 				} catch (IOException ex) {
 					ex.printStackTrace();
-					System.out.println("Error saving chart as png");
+					logFrame.setTitle("error saving chart as png");
 				}
-				finalFrame.setVisible(false);
+				finalFrame.dispose();
 			}  
 		});
+		logFrame.setTitle("outside createPlot");
 		finalFrame = new JFrame();
+		finalFrame.setTitle("Final Frame");
 		finalFrame.add(energyI);
 		finalFrame.add(energyF);
 		finalFrame.add(energyUnit);
@@ -308,7 +323,7 @@ public class Main {
 		finalFrame.add(createPlot);
 		finalFrame.setSize(700,800);
 		finalFrame.setLayout(null);
-		elementFrame.setVisible(false);
+		elementFrame.dispose();
 		finalFrame.setVisible(true);
 		finalFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
