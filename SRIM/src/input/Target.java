@@ -12,11 +12,11 @@ public class Target {
 	
 	private double density;
 	private int state;//solid=0, gas=1
-	private int compoundCorr;//always 1 for now
+	private double compoundCorr;//always 1 for now
 	
 	private int elemCount = 0;
 	
-	public Target(double density, int state, int corr) {
+	public Target(double density, int state, double corr) {
 		this.density = density;
 		this.state = state;
 		compoundCorr = corr;
@@ -52,7 +52,7 @@ public class Target {
 	public int getState() {
 		return state;
 	}
-	public int getCompCorr() {
+	public double getCompCorr() {
 		return compoundCorr;
 	}
 	

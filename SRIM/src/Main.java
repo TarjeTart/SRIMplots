@@ -176,7 +176,7 @@ public class Main {
 				target = new Target(
 						new Scanner(density.getText()).nextDouble(),
 						state.getSelectedIndex(),
-						new Scanner(corr.getText()).nextInt());
+						new Scanner(corr.getText()).nextDouble());
 				makeElementFrame();
 			}  
 		});
