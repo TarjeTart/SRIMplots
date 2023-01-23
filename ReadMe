@@ -3,3 +3,7 @@ Requirments:
 - This application runs on Java 1.8
 - When prompted to select SRIM location make sure to point to SRIM folder and not inside it
 - Ignore the exe version
+
+Outputs:
+- The program will open a plit of the stopping ranges for with the energies and units specified by the user
+- A png of the plot and a text file with the raw data are also saved in the SR Module file within the SRIM directory
